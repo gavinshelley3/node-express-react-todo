@@ -2,53 +2,15 @@
 
 The `front-end` directory contains a working front end written with React. However,
 it uses local data and doesn't talk to the back end. We'll be modifying it so that
-it uses the front end to store data.
+it uses the back end to store data.
 
-You'll see in the source code that we have just one view, `Home.vue`, and no
-child components. We also have nothing really special happening in `App.vue`
-since there is no global menu, header, or footer for the site.
-
-To see what we have so far:
-
-```
-cd front-end
-npm install
-npm run serve
-```
-
-Navigate to `localhost:8080` to see the site. Add some items, make sure all the
+Navigate to the front end directory in your browser to see the site. Add some items, make sure all the
 functionality works. Refresh the screen and notice that any new items you added
 are gone, since they are stored in the front end.
 
-## Setup proxy configuration
-
-We need to tell the front end to send API requests to the back end. Do this by
-creating a file called `vue.config.js` in the `front-end` directory. This file
-should contain:
-
-```javascript
-module.exports = {
-  devServer: {
-    proxy: 'http://localhost:3000',
-  }
-}
+To get started include axios in the head section.
 ```
-
-## Install Axios
-
-We're going to be using the [Axios](https://github.com/axios/axios) library to
-make API requests instead of fetch. Install this with:
-
-```
-npm install axios
-```
-
-Then, at the start of the `script` section in `src/views/Home.vue`, import this
-library:
-
-```javascript
-<script>
-import axios from 'axios';
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 ```
 
 ## Creating and reading items
