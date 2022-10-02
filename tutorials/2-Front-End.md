@@ -4,7 +4,7 @@ The `front-end` directory contains a working front end written with React. Howev
 it uses local data and doesn't talk to the back end. We'll be modifying it so that
 it uses the back end to store data.
 
-Navigate to the front end directory in your browser to see the site. Add some items, make sure all the
+Check out the repo and navigate to the front end directory in your browser to see the site. Add some items, make sure all the
 functionality works. Refresh the screen and notice that any new items you added
 are gone, since they are stored in the front end.
 
@@ -29,26 +29,24 @@ hard-coded data there:
         };
 ```
 
-Now add a `created` section to the component, right after the `data()` function:
+Now add a call to the back end to the constructor function:
 
 ```javascript
-created: function() {
-  this.getItems();
-},
+        this.getItems = this.handleFilter.getItems(this);
+        this.getItems();
 ```
 
-This will call the `getItems` function when Vue is created. Add that function in
-the `methods` section of the component:
+This will call the `getItems` function when React is rendered. Add that function after the constructor:
 
 ```javascript
-    async getItems() {
-      try {
-        const response = await axios.get("/api/items");
-        this.items = response.data;
-      } catch (error) {
-        console.log(error);
+     async getItems() {
+          try {
+            const response = await axios.get("/api/items");
+            this.items = response.data;
+          } catch (error) {
+            console.log(error);
+          }
       }
-    },
 ```
 
 This uses the axios library to get the items, then store them in the `items` property.
