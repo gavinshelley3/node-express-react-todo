@@ -1,6 +1,6 @@
 # Front End
 
-The `front-end` directory contains a working front end written with Vue CLI. However,
+The `front-end` directory contains a working front end written with React. However,
 it uses local data and doesn't talk to the back end. We'll be modifying it so that
 it uses the front end to store data.
 
