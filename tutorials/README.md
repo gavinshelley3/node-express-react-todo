@@ -1,4 +1,4 @@
-This is a simple todo list application built using [Node](https://nodejs.org/en/), [Express](https://expressjs.com/), and [Vue](https://vuejs.org/).
+This is a simple todo list application built using [Node](https://nodejs.org/en/), [Express](https://expressjs.com/), and [React](https://reactjs.org/).
 
 Use the following tutorials to learn how to build this app:
 
