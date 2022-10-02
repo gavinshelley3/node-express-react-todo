@@ -23,13 +23,10 @@ Let's start by initializing the list to an empty array instead of having
 hard-coded data there:
 
 ```javascript
-  data() {
-    return {
-      items: [],
-      text: '',
-      show: 'all',
-    }
-  },
+        this.state = {
+            formtask: '', 
+            tasks:[]
+        };
 ```
 
 Now add a `created` section to the component, right after the `data()` function:
