@@ -100,7 +100,7 @@ app.post('/api/todo', (req, res) => {
   id = id + 1;
   let item = {
     id: id,
-    text: req.body.text,
+    task: req.body.task,
     completed: req.body.completed
   };
   items.push(item);
@@ -109,7 +109,7 @@ app.post('/api/todo', (req, res) => {
 ```
 
 We support requests to create a todo list item by accepting a POST request on
-`/api/todo`. This request should send two fields: `text` and `completed`. We'll
+`/api/todo`. This request should send two fields: `task` and `completed`. We'll
 also add an `id` field, which we will increment each time a new item is added.
 This will let us edit items by specifying the item `id`.
 
@@ -140,8 +140,8 @@ node server.js
 In another terminal:
 
 ```
-curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
-curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"task":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"task":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
 curl -X GET localhost:3000/api/todo
 ```
 
@@ -162,7 +162,7 @@ app.put('/api/todo/:id', (req, res) => {
     return;
   }
   let item = items[index];
-  item.text = req.body.text;
+  item.task = req.body.task;
   item.completed = req.body.completed;
   res.send(item);
 });
@@ -175,7 +175,7 @@ put this parameter into `req.params.id`.
 We will *not* assume that the items are ordered in the `items` array by their
 `id`. So to find an item with a given `id` we will create an `itemsMap`, which
 is an array that contains just the item ids. We can then search through this
-array using `indexOf`. Once we have the item we want, we use the `text` and
+array using `indexOf`. Once we have the item we want, we use the `task` and
 `completed` fields from `req.body` to change the item.
 
 We return an error if the item isn't found. Like with other requests, we return
@@ -190,10 +190,10 @@ node server.js
 In another terminal:
 
 ```
-curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
-curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"task":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"task":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
 curl -X GET localhost:3000/api/todo
-curl -X PUT -d '{"text":"party all night", "completed":true}' -H "Content-Type: application/json" localhost:3000/api/todo/2
+curl -X PUT -d '{"task":"party all night", "completed":true}' -H "Content-Type: application/json" localhost:3000/api/todo/2
 curl -X GET localhost:3000/api/todo
 ```
 The final GET should display "party all night" as completed.
@@ -237,8 +237,8 @@ node server.js
 In another terminal:
 
 ```
-curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
-curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"task":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"task":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
 curl -X GET localhost:3000/api/todo
 curl -X DELETE localhost:3000/api/todo/2
 curl -X GET localhost:3000/api/todo
