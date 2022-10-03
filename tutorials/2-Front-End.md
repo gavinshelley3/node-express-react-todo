@@ -51,25 +51,24 @@ This will call the `getItems` function when React is rendered. Add that function
 
 This uses the axios library to get the items, then store them in the `items` property.
 
-To add new items, let's modify the `addItems` function:
+To add new items, let's create the `addItems` function:
 
 ```javascript
-    async addItem() {
-      try {
-        await axios.post("/api/items", {
-          text: this.text,
-          completed: false
-        });
-        this.text = "";
-        this.getItems();
-      } catch (error) {
-        console.log(error);
+      async addItem() {
+          try {
+            await axios.post("/api/items", {
+              task: this.formtask,
+              completed: false
+            });
+            this.getItems();
+          } catch (error) {
+            console.log(error);
+          }
       }
-    },
 ```
 
 This POSTs a new item to the server, and when it is done it fetches the list of
-items again so that Vue will update the DOM with the new list.
+items again so that React will update the DOM with the new list.
 
 You should be able to test this by running the back end in one terminal:
 
@@ -78,12 +77,7 @@ cd back-end
 node server.js
 ```
 
-And the front end should already be running in another terminal:
-
-```
-cd front-end
-npm run serve
-```
+And the front end should already be served by Caddy.
 
 Visit `localhost:8080` in your browser. Notice that when you refresh the page,
 items are not lost now, because they are stored on the server
