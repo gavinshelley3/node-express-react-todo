@@ -49,8 +49,6 @@ npm install express body-parser
 node_modules
 ```
 
-In this exercise, I have already placed a `.gitignore` into the repo for you.
-
 ## Setup
 
 We'll start with a basic setup for a back end server. In `server.js`, put the following:
@@ -98,7 +96,7 @@ add a database in subsequent exercises so we can store our data permanently.
 Now let's do the create operation:
 
 ```javascript
-app.post('/api/items', (req, res) => {
+app.post('/api/todo', (req, res) => {
   id = id + 1;
   let item = {
     id: id,
@@ -111,7 +109,7 @@ app.post('/api/items', (req, res) => {
 ```
 
 We support requests to create a todo list item by accepting a POST request on
-`/api/items`. This request should send two fields: `text` and `completed`. We'll
+`/api/todo`. This request should send two fields: `text` and `completed`. We'll
 also add an `id` field, which we will increment each time a new item is added.
 This will let us edit items by specifying the item `id`.
 
@@ -126,7 +124,7 @@ one list per user and users will only be able to access their own list.
 Next, we'll support the read operation:
 
 ```javascript
-app.get('/api/items', (req, res) => {
+app.get('/api/todo', (req, res) => {
   res.send(items);
 });
 ```
@@ -142,9 +140,9 @@ node server.js
 In another terminal:
 
 ```
-curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/items
-curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/items
-curl -X GET localhost:3000/api/items
+curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X GET localhost:3000/api/todo
 ```
 
 ## Updating items
@@ -152,7 +150,7 @@ curl -X GET localhost:3000/api/items
 To support editing items (which is what we're doing when we mark one as complete), add the following method to `server.js`:
 
 ```javascript
-app.put('/api/items/:id', (req, res) => {
+app.put('/api/todo/:id', (req, res) => {
   let id = parseInt(req.params.id);
   let itemsMap = items.map(item => {
     return item.id;
@@ -171,7 +169,7 @@ app.put('/api/items/:id', (req, res) => {
 ```
 
 In a REST API, we use a PUT request when we want to update an item. The URL will
-include the item `id`, such as `/api/items/5` to edit item number 5. Node will
+include the item `id`, such as `/api/todo/5` to edit item number 5. Node will
 put this parameter into `req.params.id`.
 
 We will *not* assume that the items are ordered in the `items` array by their
@@ -192,19 +190,20 @@ node server.js
 In another terminal:
 
 ```
-curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/items
-curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/items
-curl -X GET localhost:3000/api/items
-curl -X PUT -d '{"text":"party all night", "completed":true}' -H "Content-Type: application/json" localhost:3000/api/items/2
-curl -X GET localhost:3000/api/items
+curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X GET localhost:3000/api/todo
+curl -X PUT -d '{"text":"party all night", "completed":true}' -H "Content-Type: application/json" localhost:3000/api/todo/2
+curl -X GET localhost:3000/api/todo
 ```
+The final GET should display "party all night" as completed.
 
 ## Deleting items
 
 To support deleting items, add the following method to `server.js`:
 
 ```javascript
-app.delete('/api/items/:id', (req, res) => {
+app.delete('/api/todo/:id', (req, res) => {
   let id = parseInt(req.params.id);
   let removeIndex = items.map(item => {
       return item.id;
@@ -238,9 +237,9 @@ node server.js
 In another terminal:
 
 ```
-curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/items
-curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/items
-curl -X GET localhost:3000/api/items
-curl -X DELETE localhost:3000/api/items/2
-curl -X GET localhost:3000/api/items
+curl -X POST -d '{"text":"get an A on the exam", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X POST -d '{"text":"party all night", "completed":false}' -H "Content-Type: application/json" localhost:3000/api/todo
+curl -X GET localhost:3000/api/todo
+curl -X DELETE localhost:3000/api/todo/2
+curl -X GET localhost:3000/api/todo
 ```
