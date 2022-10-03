@@ -1,159 +1,233 @@
 # Front End
-
-The `front-end` directory contains a working front end written with React. However,
-it uses local data and doesn't talk to the back end. We'll be modifying it so that
-it uses the back end to store data.
-
-Check out the repo and navigate to the front end directory in your browser to see the site. Add some items, make sure all the
-functionality works. Refresh the screen and notice that any new items you added
-are gone, since they are stored in the front end.
-
-To get started include axios in the head section.
+1. Create a new React project
 ```
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+npx create-react-app front-end
 ```
 
-## Creating and reading items
+2. Now go into this directory and run:
 
-Currently, the front end initializes items in a local array
-called `items`. We need to modify this so that it instead gets the list of items
-from the back end. We also need to use the back end to create items.
+```sh
+cd front-end
+npm install
+npm install axios
+```
+This will install all of the dependencies this code needs. 
 
-Let's start by initializing the list to an empty array instead of having
-hard-coded data there:
-
-```javascript
-        this.state = {
-            formtask: '', 
-            tasks:[]
-        };
+3. Insert a proxy line in the "package.json" file so that requests to port 8080 to the "/api/tickets" route will be forwarded to port 3000.
+```
+{
+  "name": "front-end",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:3000",
 ```
 
-Now add a call to the back end to the constructor function:
+4. You will also need to create a file ".env.development.local" with the following content
+```
+DANGEROUSLY_DISABLE_HOST_CHECK=true
+```
+The development web server will normally not serve files to a browser from another host, but we want it to so you can develop on Cloud9.
+This ".env" file will make things work.  If you dont have this file, you will get the error "Invalid Host header" when you access your React development server.  If you are developing on your laptop, you wont need to worry about this.
 
-```javascript
-        this.getItems = this.handleFilter.getItems(this);
-        this.getItems();
+6. Now insert the code to call the back end into src/App.js
+```
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import './App.css';
+
+function App() {
+  // setup state
+  const [tasks, setTasks] = useState([]);
+  const [error, setError] = useState("");
+  const [item, setItem] = useState("");
+
+  const fetchTasks = async() => {
+    try {      
+      const response = await axios.get("/api/todo");
+      setTasks(response.data);
+    } catch(error) {
+      setError("error retrieving tickets: " + error);
+    }
+  }
+  const createTask = async() => {
+    try {
+      await axios.post("/api/todo", {task: item, completed: false});
+    } catch(error) {
+      setError("error adding a task: " + error);
+    }
+  }
+  const deleteOneTask = async(task) => {
+    try {
+      await axios.delete("/api/todo/" + task.id);
+    } catch(error) {
+      setError("error deleting a task" + error);
+    }
+  }
+
+  // fetch ticket data
+  useEffect(() => {
+    fetchTasks();
+  },[]);
+
+  const addTask = async(e) => {
+    e.preventDefault();
+    await createTask();
+    fetchTasks();
+    setItem("");
+  }
+
+  const deleteTask = async(task) => {
+    await deleteOneTask(task);
+    fetchTasks();
+  }
+
+  // render results
+  return (
+    <div className="App">
+      {error}
+      <h1>Create a Task</h1>
+      <form onSubmit={addTask}>
+        <div>
+          <label>
+            Task:
+            <input type="text" value={item} onChange={e => setItem(e.target.value)} />
+          </label>
+        </div>
+        <input type="submit" value="Submit" />
+      </form>
+      <h1>Tasks</h1>
+      {tasks.map( item => (
+        <div key={item.id} className="item">
+            <p><i>-- {item.task}</i></p>
+          <button onClick={e => deleteTask(item)}>Delete</button>
+        </div>
+      ))}     
+    </div>
+  );
+}
+
+export default App;
+
 ```
 
-This will call the `getItems` function when React is rendered. Add that function after the constructor:
-
-```javascript
-     async getItems() {
-          try {
-            const response = await axios.get("/api/items");
-            this.items = response.data;
-          } catch (error) {
-            console.log(error);
-          }
-      }
+7. Now start the front end server
+```sh
+npm start
 ```
 
-This uses the axios library to get the items, then store them in the `items` property.
+You now have a React front end for a ticket service. 
 
-To add new items, let's create the `addItems` function:
+### State hooks
 
-```javascript
-      async addItem() {
-          try {
-            await axios.post("/api/items", {
-              task: this.formtask,
-              completed: false
-            });
-            this.getItems();
-          } catch (error) {
-            console.log(error);
-          }
-      }
+In `App.js`, are using a [functional component](https://reactjs.org/docs/components-and-props.html) and the [state hook](https://reactjs.org/docs/hooks-state.html). Thus we have three lines that create state variables:
+
+```js
+  const [tasks, setTasks] = useState([]);
+  const [error, setError] = useState("");
+  const [item, setItem] = useState("");
 ```
 
-This POSTs a new item to the server, and when it is done it fetches the list of
-items again so that React will update the DOM with the new list.
+Each variable (such as `tickets`) comes with a setter function (such as `setTickets`). You also provide a default value in `useState`, such as `[]` or an empty string. You can [read more about the useState hook](https://reactjs.org/docs/hooks-reference.html#usestate).
 
-You should be able to test this by running the back end in one terminal:
+### Calling the API
 
-```
-cd back-end
-node server.js
-```
+You will see three methods for calling the API. We use this function to GET all of the current tasks:
 
-And the front end should already be served by Caddy.
-
-Visit `localhost:8080` in your browser. Notice that when you refresh the page,
-items are not lost now, because they are stored on the server
-
-## Updating items
-
-To update items on the server, we need to add an event handler that gets called
-whenever a checkbox is clicked to indicate an item has been completed. In the
-`template` of `Home.vue`, modify the checkbox so it looks like this:
-
-```html
-          <input type="checkbox" v-model="item.completed" @click="completeItem(item)" />
+```js
+  const fetchTasks = async() => {
+    try {      
+      const response = await axios.get("/api/todo");
+      setTasks(response.data);
+    } catch(error) {
+      setError("error retrieving tickets: " + error);
+    }
+  }
 ```
 
-Then, in the `methods` section, add the `completeItem` method:
+Notice how we use `await` to wait for the API response. This is because axios returns a Promise. Using `await` means your code is free to handle other events (such as a button click), but this method will not run the next line of code until the Promise is finished.
 
-```javascript
-    async completeItem(item) {
-      try {
-        axios.put("/api/items/" + item.id, {
-          text: item.text,
-          completed: !item.completed,
-        });
-        this.getItems();
-      } catch (error) {
-        console.log(error);
-      }
-    },
+We also wrap this API call in a `try/catch` block so that we can capture any errors that occur and display them in the UI.
+
+### Fetching tickets when the component is rendered
+
+You will see this line in the function, calling [useEffect](https://reactjs.org/docs/hooks-reference.html#useeffect):
+
+```js
+  useEffect(() => {
+    fetchTasks();
+  },[]);
 ```
 
-This method uses `axios` to send the PUT request, with the required information
-in the body of the request.
+This fetches the tasks once, when the application starts. Let's break down what this is doing. The first argument to `useEffect` is a function:
 
-Notice that when we add an item or edit an item we call `getitems` when it is
-done.  This enables us to be sure our copy of the data is in sync with the
-server. A different way to do this is to modify our local copy of the data but
-*only* if the API call succeeds. This would avoid fetching the entire list each
-time it is changed, but requires you to be careful to keep the data in sync
-properly.
-
-You should be able to test this if you still have both your back end and front
-end servers running.
-
-## Deleting items
-
-We need to modify the front end to call the API to delete an item. In
-`Home.vue`, modify `deleteItem` as follows:
-
-```
-    async deleteItem(item) {
-      try {
-        await axios.delete("/api/items/" + item.id);
-        this.getItems();
-      } catch (error) {
-        console.log(error);
-      }
-    },
+```js
+() => { fetchTasks(); }
 ```
 
-Notice how we get the list after the API call succeeds, so we Vue can update the
-DOM.
+This function takes no arguments and simply calls `fetchTasks()`. We wrap `fetchTasks` in a function because it is an `async` function, and `useEffect` can't handle Promises.
 
-We also need to change `deleteCompleted`:
+The second argument to `useEffect` is the empty array `[]`. This is a list of dependencies, indicating when the hook should run (whenever its dependencies change). However, since we have given it an empty list, the hook won't run again. Be careful with this -- if you leave off this argument, the function will run after *every* render. This would result in an infinite loop in our case -- `fetchTasks` will cause the component to render (so it can show the tasks), which will trigger another call to `fetchTasks` and so on.
 
-```javascript
-    deleteCompleted() {
-      this.items.forEach(item => {
-        if (item.completed)
-          this.deleteItem(item);
-      });
-    },
+### Handling form events
+
+Each form input needs to handle the `onChange` event. For example:
+
+```js
+<input type="text" value={item} onChange={e => setItem(e.target.value)} />
 ```
 
-This loops through the items and sends a request to the server to delete each
-completed item. These will each run asynchronously since `deleteItem` is an
-async function!
+Every time the input value changes, we call a function, which takes `e`, an event. This function calls `setItem` with the value of what was typed into the input field, `e.target.value`. Notice we also set the value to the `item` state variable, so that if we change it in our code, this will be shown on the page.
+
+Likewise, we need a function to handle the event that is triggered when the form is submitted:
+
+```js
+<form onSubmit={addTask}>
+```
+
+This will call the `addTask` function:
+
+```js
+  const addTask = async(e) => {
+    e.preventDefault();
+    await createTask();
+    fetchTasks();
+    setItem("");
+  }
+```
+
+We first use `e.preventDefault()` so that the page is not reloaded (the standard browser behavior when submitting a form). We then create the ticket, fetch all tickets (which should include the new one), and reset the `name` and `problem` state variables. Calling `fetchTickets` will result in a change to the `tickets` state variable. Changing all three state variables will cause the page to be rendered again, showing the changes.
+
+### The rest of the code
+
+You will see the rest of the code uses one of these concepts.
+
+### Connecting the back end to the front end
+
+By default, the React app runs on port `8080`. Your back end server runs on port `3000`. You will be tempted to put the full URL into your API requests, like this:
+
+```js
+const response = await axios.get("http://yourserverurl:3000/api/todo");
+```
+
+You don't want to do this! This hard-codes a particular hostname (localhost) and port (3030) into your app. It will break when you deploy it.
+
+Instead, notice how our code does this:
+
+```js443
+const response = await axios.get("/api/todo");
+```
+
+We leave off the hostname and the port number. By default, this means it goes to the same host and port where the front end is running. While developing the code, this is `yourserverurl:8080`. When running the code, it might be `yourserverulr` at port 443 (because we are using a secure server).
+
+For this to work during development, we have the following line in `package.json`:
+
+```js
+  "proxy": "http://localhost:3000",
+```
+
+This tells the front end to act as a `proxy` for the back end, sending any request that it doesn't handle (such as for `/api/todo`) to the listed hostname and port: `localhost:3000`.
+
+When we deploy a React + Node app on a server, we will likewise setup your web server (nginx or Caddy) so that it can reverse proxy API requests to the Node server.
 
 You should be able to test this if you still have your back end and front end
-server running.
+server running.  Make sure you run your front end in a window with "inspect" and look for errors in the console.
