@@ -63,6 +63,18 @@ function App() {
       setError("error deleting a task" + error);
     }
   }
+  const toggleOneTask = async(task) => {
+    try {
+      if(task.completed === true) {
+        task.completed = false;
+      } else {
+        task.completed = true;
+      }
+      await axios.put("/api/todo/" + task.id, task);
+    } catch(error) {
+      setError("error modifying a task" + error);
+    }
+  }
 
   // fetch ticket data
   useEffect(() => {
@@ -80,7 +92,10 @@ function App() {
     await deleteOneTask(task);
     fetchTasks();
   }
-
+  const toggleTask = async(task) => {
+    await toggleOneTask(task);
+    fetchTasks();
+  }
   // render results
   return (
     <div className="App">
@@ -97,8 +112,8 @@ function App() {
       </form>
       <h1>Tasks</h1>
       {tasks.map( item => (
-        <div key={item.id} className="item">
-            <p><i>-- {item.task}</i></p>
+        <div key={item.id} className={item.completed?"strike":"todo"}>
+            <p><i onClick={e=> toggleTask(item)}>-- {item.task}</i></p>
           <button onClick={e => deleteTask(item)}>Delete</button>
         </div>
       ))}     
@@ -108,6 +123,15 @@ function App() {
 
 export default App;
 
+```
+And add the following lines to App.css
+```
+.todo {
+  cursor: pointer;
+}
+.strike {
+  text-decoration: line-through;
+}
 ```
 
 7. Now start the front end server
