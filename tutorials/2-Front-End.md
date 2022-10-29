@@ -13,13 +13,14 @@ npm install axios
 ```
 This will install all of the dependencies this code needs. 
 
-3. Insert a proxy line in the "package.json" file so that requests to port 8080 to the "/api/tickets" route will be forwarded to port 3000.
+3. Insert a proxy line in the "package.json" file so that requests to port 8080 to the "/api/tickets" route will be forwarded to port 3000. And add the Homepage line so that the app can be at a relative path.
 ```
 {
   "name": "front-end",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:3000",
+  "homepage": ".",
 ```
 
 4. You will also need to create a file ".env.development.local" with the following content
