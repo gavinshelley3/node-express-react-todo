@@ -13,7 +13,7 @@ npm install axios
 ```
 This will install all of the dependencies this code needs. 
 
-3. Insert a proxy line in the "package.json" file so that requests to port 8080 to the "/api/tickets" route will be forwarded to port 3000. And add the Homepage line so that the app can be at a relative path.
+3. Insert a proxy line in the "package.json" file so that requests to port 8080 to the "/api/tasks" route will be forwarded to port 3000. And add the Homepage line so that the app can be at a relative path.
 ```
 {
   "name": "front-end",
@@ -47,7 +47,7 @@ function App() {
       const response = await axios.get("/api/todo");
       setTasks(response.data);
     } catch(error) {
-      setError("error retrieving tickets: " + error);
+      setError("error retrieving tasks: " + error);
     }
   }
   const createTask = async() => {
@@ -152,7 +152,7 @@ In `App.js`, are using a [functional component](https://reactjs.org/docs/compone
   const [item, setItem] = useState("");
 ```
 
-Each variable (such as `tickets`) comes with a setter function (such as `setTickets`). You also provide a default value in `useState`, such as `[]` or an empty string. You can [read more about the useState hook](https://reactjs.org/docs/hooks-reference.html#usestate).
+Each variable (such as `tasks`) comes with a setter function (such as `setTasks`). You also provide a default value in `useState`, such as `[]` or an empty string. You can [read more about the useState hook](https://reactjs.org/docs/hooks-reference.html#usestate).
 
 ### Calling the API
 
@@ -164,7 +164,7 @@ You will see three methods for calling the API. We use this function to GET all 
       const response = await axios.get("/api/todo");
       setTasks(response.data);
     } catch(error) {
-      setError("error retrieving tickets: " + error);
+      setError("error retrieving tasks: " + error);
     }
   }
 ```
@@ -173,7 +173,7 @@ Notice how we use `await` to wait for the API response. This is because axios re
 
 We also wrap this API call in a `try/catch` block so that we can capture any errors that occur and display them in the UI.
 
-### Fetching tickets when the component is rendered
+### Fetching tasks when the component is rendered
 
 You will see this line in the function, calling [useEffect](https://reactjs.org/docs/hooks-reference.html#useeffect):
 
@@ -220,7 +220,7 @@ This will call the `addTask` function:
   }
 ```
 
-We first use `e.preventDefault()` so that the page is not reloaded (the standard browser behavior when submitting a form). We then create the ticket, fetch all tickets (which should include the new one), and reset the `name` and `problem` state variables. Calling `fetchTickets` will result in a change to the `tickets` state variable. Changing all three state variables will cause the page to be rendered again, showing the changes.
+We first use `e.preventDefault()` so that the page is not reloaded (the standard browser behavior when submitting a form). We then create the task, fetch all tasks (which should include the new one), and reset the `name` and `problem` state variables. Calling `fetchTasks` will result in a change to the `tasks` state variable. Changing all three state variables will cause the page to be rendered again, showing the changes.
 
 ### The rest of the code
 
