@@ -2,13 +2,6 @@
 
 We previously introduced Node in the [Learning Node and Express](https://github.com/BYU-CS-260/learning-node-express) activity. You should use the same setup.
 
-## If you are using nvm
-
- If you setup Node using nvm, then you need to first tell nvm which version of node to use:
-
-```
-nvm use stable
-```
 
 ## Initialize a new Node project
 
