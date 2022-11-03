@@ -31,7 +31,7 @@ The development web server will normally not serve files to a browser from anoth
 This ".env" file will make things work.  If you dont have this file, you will get the error "Invalid Host header" when you access your React development server.  If you are developing on your laptop, you wont need to worry about this.
 
 6. Now insert the code to call the back end into src/App.js
-```
+```jsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -126,7 +126,7 @@ export default App;
 
 ```
 And add the following lines to App.css
-```
+```css
 .todo {
   cursor: pointer;
 }
