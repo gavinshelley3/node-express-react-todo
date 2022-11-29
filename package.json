@@ -1,0 +1,19 @@
+{
+  "name": "express-react-todo",
+  "version": "1.0.0",
+  "description": "todo list",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BYU-CS-260/node-express-react-todo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BYU-CS-260/node-express-react-todo/issues"
+  },
+  "homepage": "https://github.com/BYU-CS-260/node-express-react-todo#readme"
+}
